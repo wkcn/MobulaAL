@@ -10,6 +10,7 @@ MOBULA_KERNEL arange_kernel(const int n, DType *output){
 
 NDArray arange(const int n){
 	NDArray arr;
+	arr.alloc(n);
 	KERNEL_RUN(arange_kernel, n)(n, arr.data());
 	return arr;
 }

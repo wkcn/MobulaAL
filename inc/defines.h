@@ -1,6 +1,12 @@
 #ifndef _MOBULA_DEFINES_
 #define _MOBULA_DEFINES_
 
+#include <vector>
+#include <string>
+#include <typeinfo>
+#include <cassert>
+using namespace std;
+
 namespace mobula{
 
 #ifdef USING_CUDA
@@ -21,7 +27,7 @@ namespace mobula{
 
 #endif
 
-enum DATA_TYPE{
+enum class DATA_TYPE{
 	FLOAT
 };
 typedef float DType;

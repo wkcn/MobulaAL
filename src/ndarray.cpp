@@ -2,9 +2,11 @@
 
 namespace mobula{
 
-NDArray::NDArray():dtype(FLOAT){
-	_data = xnew<float>(10);
-	_size = 10;
+NDArray::NDArray():_size(0), _dtype(DATA_TYPE::FLOAT), _data(nullptr){
+}
+
+NDArray::~NDArray(){
+	free();
 }
 
 int NDArray::size() const{
@@ -12,8 +14,33 @@ int NDArray::size() const{
 }
 
 int NDArray::ndim() const{
-	return _ndim;
+	return _shape.size();
 }
+
+Vec<int> NDArray::shape() const{
+	return _shape;
+}
+
+void NDArray::alloc(int n){
+	free();
+	_size = n;
+	_shape.resize(1, n);
+	_data = xnew<DType>(n);
+}
+
+void NDArray::free(){
+	if (_data){
+		xdel(_data);
+	}
+}
+
+NDArray NDArray::reshape(Vec<int> shape) const{
+	int new_size = 1;
+	for (int k : shape)new_size *= k;
+	NDArray tmp = *this;
+	tmp._shape = shape;
+	return tmp;
+};
 
 NDArray NDArray::to_host() const{
 #ifdef USING_CUDA

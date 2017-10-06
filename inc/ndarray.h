@@ -3,16 +3,23 @@
 
 
 #include "defines.h"
+#include "vec.h"
 
 namespace mobula{
 
 class NDArray{
 public:
 	NDArray();
+	~NDArray();
 	int size() const;
 	int ndim() const;
+	Vec<int> shape() const;
 	DType* data() const;
+	NDArray reshape(Vec<int> shape) const;
 	NDArray to_host() const;
+public:
+	void alloc(int n);
+	void free();
 public:
 	template<typename T>
 	T get_data(T, int i);
@@ -20,9 +27,8 @@ public:
 	friend NDArray operator+(const NDArray&, const NDArray&);
 private:
 	int _size;
-	int _ndim;
-	int *_shape;
-	DATA_TYPE dtype;
+	Vec<int> _shape;
+	DATA_TYPE _dtype;
 	DType *_data;
 };
 
