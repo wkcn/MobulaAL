@@ -54,6 +54,9 @@ NDArray NDArray::to_host() const{
 #endif
 }
 
+DType* NDArray::data(){
+	return _data;
+}
 DType* NDArray::data() const{
 	return _data;
 }

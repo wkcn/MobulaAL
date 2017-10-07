@@ -5,6 +5,7 @@
 #include <string>
 #include <typeinfo>
 #include <cassert>
+#include <thread>
 using namespace std;
 
 namespace mobula{
@@ -21,9 +22,22 @@ namespace mobula{
 
 #else
 
+template<typename Func>
+class KernelRunner{
+public:
+	KernelRunner(Func func):_func(func){};
+	template<typename ...Args>
+	void operator()(Args... args){
+		_func(args...);
+	}
+private:
+	Func _func;
+};
+
+#define HOST_NUM_THREADS 8
 #define MOBULA_KERNEL void
 #define KERNEL_LOOP(i,n) for(int i = 0;i < (n);++i)
-#define KERNEL_RUN(a, n) a
+#define KERNEL_RUN(a, n) (KernelRunner<decltype(&a)>(&a))
 
 #endif
 

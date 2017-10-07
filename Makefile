@@ -5,9 +5,9 @@ CUDA_DIR = /opt/cuda
 NVCC := $(CUDA_DIR)/bin/nvcc
 
 CFLAGS := -std=c++11 -Iinc
-LDFLAGS := -pthread
+LDFLAGS := 
 
-CU_CFLAGS := -std=c++11 -Iinc -DUSING_CUDA
+CU_CFLAGS := -std=c++11 -Iinc -DUSING_CUDA -Wno-deprecated-gpu-targets
 CU_LDFLAGS := -L$(CUDA_DIR)/lib64 -lcuda -lcudart -lcublas
 
 SRCS := $(wildcard src/*.cpp) 

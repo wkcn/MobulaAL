@@ -11,10 +11,12 @@ class NDArray{
 public:
 	NDArray();
 	~NDArray();
+	DType* data();
+	DType* data() const;
+public:
 	int size() const;
 	int ndim() const;
 	Vec<int> shape() const;
-	DType* data() const;
 	NDArray reshape(Vec<int> shape) const;
 	NDArray to_host() const;
 public:
