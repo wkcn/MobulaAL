@@ -3,9 +3,12 @@
 
 #include <vector>
 #include <string>
+#include <map>
+#include <utility>
 #include <typeinfo>
 #include <cassert>
 #include <thread>
+#include <mutex>
 using namespace std;
 
 namespace mobula{
@@ -22,22 +25,45 @@ namespace mobula{
 
 #else
 
+extern map<thread::id, int> MOBULA_KERNEL_IDS;
+extern mutex MOBULA_KERNEL_IDS_MUTEX;
+#define HOST_NUM_THREADS 8
+
 template<typename Func>
 class KernelRunner{
 public:
-	KernelRunner(Func func):_func(func){};
+	KernelRunner(Func func, int n):_func(func), _n(n <= HOST_NUM_THREADS ? n : HOST_NUM_THREADS){};
 	template<typename ...Args>
 	void operator()(Args... args){
-		_func(args...);
+		vector<thread> threads(_n);
+		vector<pair<thread::id, int> > vs(_n);
+		MOBULA_KERNEL_IDS_MUTEX.lock();
+		for (int i = 0;i < _n;++i){
+			threads[i] = thread(_func, args...);
+			thread::id id = threads[i].get_id();
+			MOBULA_KERNEL_IDS[id] = i;
+			vs[i] = make_pair(id, i);
+		}
+		MOBULA_KERNEL_IDS_MUTEX.unlock();
+		for (int i = 0;i < _n;++i){
+			threads[i].join();
+		}
+		MOBULA_KERNEL_IDS_MUTEX.lock();
+		for (pair<thread::id, int> &p : vs){
+			if (MOBULA_KERNEL_IDS.count(p.first) && MOBULA_KERNEL_IDS[p.first] == p.second){
+				MOBULA_KERNEL_IDS.erase(p.first);
+			}
+		}
+		MOBULA_KERNEL_IDS_MUTEX.unlock();
 	}
 private:
 	Func _func;
+	int _n;
 };
 
-#define HOST_NUM_THREADS 8
 #define MOBULA_KERNEL void
-#define KERNEL_LOOP(i,n) for(int i = 0;i < (n);++i)
-#define KERNEL_RUN(a, n) (KernelRunner<decltype(&a)>(&a))
+#define KERNEL_LOOP(i,n) for(int i = MOBULA_KERNEL_IDS[this_thread::get_id()];i < (n);i += HOST_NUM_THREADS)
+#define KERNEL_RUN(a, n) (KernelRunner<decltype(&a)>(&a, (n)))
 
 #endif
 

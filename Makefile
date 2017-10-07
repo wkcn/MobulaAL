@@ -5,10 +5,10 @@ CUDA_DIR = /opt/cuda
 NVCC := $(CUDA_DIR)/bin/nvcc
 
 CFLAGS := -std=c++11 -Iinc
-LDFLAGS := 
+LDFLAGS := -lpthread 
 
 CU_CFLAGS := -std=c++11 -Iinc -DUSING_CUDA -Wno-deprecated-gpu-targets
-CU_LDFLAGS := -L$(CUDA_DIR)/lib64 -lcuda -lcudart -lcublas
+CU_LDFLAGS := -lpthread -L$(CUDA_DIR)/lib64 -lcuda -lcudart -lcublas
 
 SRCS := $(wildcard src/*.cpp) 
 OBJS := $(patsubst %cpp,%o,$(SRCS))
