@@ -1,8 +1,11 @@
 #ifndef _MOBULA_DEFINES_
 #define _MOBULA_DEFINES_
 
+#include <iostream>
+#include <iomanip>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <map>
 #include <utility>
 #include <typeinfo>

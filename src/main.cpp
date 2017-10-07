@@ -5,14 +5,13 @@ using namespace std;
 using namespace mobula;
 
 int main(){
-	NDArray a = arange(10);
+	NDArray a = arange(16);
 	NDArray a_host = a.to_host();
 	cout << "SIZE: " << a.size() << endl;
 	cout << "SHAPE: " << a.shape() << endl;
-	for (int i = 0;i < a.size();++i){
-		cout << a_host.data()[i] << endl;
-	}
-
+	cout << a << endl;
+	cout << a.reshape({2,2,2,2}) << endl;
 	NDArray b = ones(3);
+	cout << b << endl;
 	return 0;
 }

@@ -19,7 +19,9 @@ public:
 	Vec<int> shape() const;
 	NDArray reshape(Vec<int> shape) const;
 	NDArray to_host() const;
-	int get_ravel_id() const;
+	int get_ravel_id(const Vec<int> index) const;
+	DType operator[](const int id) const;
+	DType& operator[](const int id);
 	friend ostream& operator<<(ostream &os,const NDArray &a);
 public:
 	void alloc(int n);
