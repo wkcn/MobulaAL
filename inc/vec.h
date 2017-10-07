@@ -9,6 +9,7 @@ namespace mobula{
 
 template<typename T>
 class Vec : public vector<T>{
+using vector<T>::vector;
 public:
 	bool operator==(const Vec &other) const;
 	bool operator!=(const Vec &other) const;

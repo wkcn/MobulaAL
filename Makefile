@@ -1,8 +1,8 @@
 TARGET := test
 
 CXX := g++ 
+NVCC := nvcc
 CUDA_DIR = /opt/cuda
-NVCC := $(CUDA_DIR)/bin/nvcc
 
 CFLAGS := -std=c++11 -Iinc
 LDFLAGS := -lpthread 

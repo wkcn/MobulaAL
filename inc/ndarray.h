@@ -19,6 +19,8 @@ public:
 	Vec<int> shape() const;
 	NDArray reshape(Vec<int> shape) const;
 	NDArray to_host() const;
+	int get_ravel_id() const;
+	friend ostream& operator<<(ostream &os,const NDArray &a);
 public:
 	void alloc(int n);
 	void free();
@@ -31,7 +33,7 @@ private:
 	int _size;
 	Vec<int> _shape;
 	DATA_TYPE _dtype;
-	DType *_data;
+	shared_ptr<DType> _data;
 };
 
 };

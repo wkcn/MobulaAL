@@ -1,6 +1,6 @@
 #include "defines.h"
 
 namespace mobula{
-map<thread::id, int> MOBULA_KERNEL_IDS;
-mutex MOBULA_KERNEL_IDS_MUTEX;
+map<thread::id, pair<int, int> > MOBULA_KERNEL_INFOS;
+map<thread::id, mutex> MOBULA_KERNEL_MUTEXES;
 };

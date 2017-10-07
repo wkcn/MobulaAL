@@ -2,11 +2,10 @@
 
 namespace mobula{
 
-NDArray::NDArray():_size(0), _dtype(DATA_TYPE::FLOAT), _data(nullptr){
+NDArray::NDArray():_size(0), _dtype(DATA_TYPE::FLOAT), _data(nullptr, xdel<DType>){
 }
 
 NDArray::~NDArray(){
-	free();
 }
 
 int NDArray::size() const{
@@ -22,16 +21,9 @@ Vec<int> NDArray::shape() const{
 }
 
 void NDArray::alloc(int n){
-	free();
 	_size = n;
 	_shape.resize(1, n);
-	_data = xnew<DType>(n);
-}
-
-void NDArray::free(){
-	if (_data){
-		xdel(_data);
-	}
+	_data.reset(xnew<DType>(n));
 }
 
 NDArray NDArray::reshape(Vec<int> shape) const{
@@ -46,8 +38,8 @@ NDArray NDArray::to_host() const{
 #ifdef USING_CUDA
 	NDArray arr = *this;
 	DType *target = new DType[_size];
-	cudaMemcpy((void*)target, _data, sizeof(DType) * _size, cudaMemcpyDeviceToHost);
-	arr._data = target;
+	cudaMemcpy((void*)target, _data.get(), sizeof(DType) * _size, cudaMemcpyDeviceToHost);
+	arr._data.reset(target);
 	return arr;
 #else
 	return *this;
@@ -55,10 +47,18 @@ NDArray NDArray::to_host() const{
 }
 
 DType* NDArray::data(){
-	return _data;
+	return _data.get();
 }
 DType* NDArray::data() const{
-	return _data;
+	return _data.get();
+}
+
+ostream& operator<<(ostream &os,const NDArray &a){
+	NDArray a_host = a.to_host();
+	vector<int> shape_iter(a._shape.size(), 0);
+	while(1){
+
+	}
 }
 
 MOBULA_KERNEL add_kernel(const int n, const DType *a, const DType *b, DType *output){

@@ -12,5 +12,7 @@ int main(){
 	for (int i = 0;i < a.size();++i){
 		cout << a_host.data()[i] << endl;
 	}
+
+	NDArray b = ones(3);
 	return 0;
 }

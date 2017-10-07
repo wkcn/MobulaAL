@@ -7,6 +7,7 @@
 #include <utility>
 #include <typeinfo>
 #include <cassert>
+#include <memory>
 #include <thread>
 #include <mutex>
 using namespace std;
@@ -25,7 +26,8 @@ namespace mobula{
 
 #else
 
-extern map<thread::id, int> MOBULA_KERNEL_IDS;
+extern map<thread::id, pair<int, int> > MOBULA_KERNEL_INFOS;
+extern map<thread::id, mutex> MOBULA_KERNEL_MUTEXES;
 extern mutex MOBULA_KERNEL_IDS_MUTEX;
 #define HOST_NUM_THREADS 8
 
@@ -36,25 +38,21 @@ public:
 	template<typename ...Args>
 	void operator()(Args... args){
 		vector<thread> threads(_n);
-		vector<pair<thread::id, int> > vs(_n);
-		MOBULA_KERNEL_IDS_MUTEX.lock();
+		vector<thread::id> vs(_n);
 		for (int i = 0;i < _n;++i){
 			threads[i] = thread(_func, args...);
 			thread::id id = threads[i].get_id();
-			MOBULA_KERNEL_IDS[id] = i;
-			vs[i] = make_pair(id, i);
+			MOBULA_KERNEL_MUTEXES[id].lock();
+			MOBULA_KERNEL_INFOS[id] = make_pair(i, _n);
+			vs[i] = id; 
 		}
-		MOBULA_KERNEL_IDS_MUTEX.unlock();
 		for (int i = 0;i < _n;++i){
 			threads[i].join();
 		}
-		MOBULA_KERNEL_IDS_MUTEX.lock();
-		for (pair<thread::id, int> &p : vs){
-			if (MOBULA_KERNEL_IDS.count(p.first) && MOBULA_KERNEL_IDS[p.first] == p.second){
-				MOBULA_KERNEL_IDS.erase(p.first);
-			}
+		for (thread::id &id : vs){
+			MOBULA_KERNEL_INFOS.erase(id);
+			MOBULA_KERNEL_MUTEXES.erase(id);
 		}
-		MOBULA_KERNEL_IDS_MUTEX.unlock();
 	}
 private:
 	Func _func;
@@ -62,7 +60,9 @@ private:
 };
 
 #define MOBULA_KERNEL void
-#define KERNEL_LOOP(i,n) for(int i = MOBULA_KERNEL_IDS[this_thread::get_id()];i < (n);i += HOST_NUM_THREADS)
+#define KERNEL_LOOP(i,n) pair<int, int> &MOBULA_KERNEL_INFO = MOBULA_KERNEL_INFOS[this_thread::get_id()]; \
+										const int MOBULA_KERNEL_STEP = MOBULA_KERNEL_INFO.second; \
+										for(int i = MOBULA_KERNEL_INFO.first;i < (n);i += MOBULA_KERNEL_STEP)
 #define KERNEL_RUN(a, n) (KernelRunner<decltype(&a)>(&a, (n)))
 
 #endif
