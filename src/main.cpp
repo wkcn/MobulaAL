@@ -11,7 +11,10 @@ int main(){
 	cout << "SHAPE: " << a.shape() << endl;
 	cout << a << endl;
 	cout << a.reshape({2,2,2,2}) << endl;
-	NDArray b = ones(3);
+	NDArray b = ones(16);
 	cout << b << endl;
+	cout << a + b << endl;
+	a += b;
+	cout << a << endl;
 	return 0;
 }

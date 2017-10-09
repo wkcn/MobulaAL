@@ -6,6 +6,16 @@ namespace mobula{
 NDArray::NDArray():_size(0), _dtype(DATA_TYPE::FLOAT), _data(nullptr, xdel<DType>){
 }
 
+NDArray::NDArray(const int size):_dtype(DATA_TYPE::FLOAT), _data(nullptr, xdel<DType>){
+	alloc(size);
+	reshape({size});
+}
+
+NDArray::NDArray(const Vec<int> &shape):_dtype(DATA_TYPE::FLOAT), _data(nullptr, xdel<DType>){
+	alloc(prod(shape));
+	reshape(shape);
+}
+
 NDArray::~NDArray(){
 }
 
@@ -126,9 +136,16 @@ ostream& operator<<(ostream &os,const NDArray &a){
 }
 
 NDArray operator+(const NDArray& a, const NDArray& b){
-	NDArray output;
+	NDArray output(a.shape());
 	KERNEL_RUN(add_kernel, 1)(a.size(), a.data(), b.data(), output.data());
+	output.reshape(a.shape());
 	return output;
 }
+
+NDArray& operator+=(NDArray &a, const NDArray& b){
+	KERNEL_RUN(add_kernel, 1)(a.size(), a.data(), b.data(), a.data());
+	return a;
+}
+
 
 };

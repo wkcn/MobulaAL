@@ -43,6 +43,20 @@ ostream& operator<<(ostream &os,const Vec<T> &v){
 	return os;
 }
 
+template<typename T>
+T prod(const Vec<T> &v){
+	T res = 1;
+	for (T t : v)res *= t;
+	return res;
+}
+
+template<typename T>
+T sum(const Vec<T> &v){
+	T res = 0;
+	for (T t : v)res += t;
+	return res;
+}
+
 };
 
 #endif

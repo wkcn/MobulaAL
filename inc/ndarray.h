@@ -10,6 +10,8 @@ namespace mobula{
 class NDArray{
 public:
 	NDArray();
+	NDArray(const int size);
+	NDArray(const Vec<int> &shape);
 	~NDArray();
 	DType* data();
 	DType* data() const;
@@ -29,6 +31,8 @@ public:
 public:
 	template<typename T>
 	T get_data(T, int i);
+public:
+	friend NDArray& operator+=(NDArray &, const NDArray&);
 public:
 	friend NDArray operator+(const NDArray&, const NDArray&);
 private:

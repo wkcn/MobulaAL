@@ -8,10 +8,8 @@ NDArray zeros(const int n){
 }
 
 NDArray zeros(const Vec<int> shape){
-	NDArray arr;
-	int n = prod(shape);
-	arr.alloc(n);
-	arr.reshape(shape);
+	NDArray arr(shape);
+	int n = arr.size(); 
 	KERNEL_RUN(set_nums_kernel, n)(n, 0, arr.data());
 	return arr;
 }
@@ -21,17 +19,14 @@ NDArray ones(const int n){
 }
 
 NDArray ones(const Vec<int> shape){
-	NDArray arr;
-	int n = prod(shape);
-	arr.alloc(n);
-	arr.reshape(shape);
+	NDArray arr(shape);
+	int n = arr.size();
 	KERNEL_RUN(set_nums_kernel, n)(n, 1, arr.data());
 	return arr;
 }
 
 NDArray arange(const int n){
-	NDArray arr;
-	arr.alloc(n);
+	NDArray arr(n);
 	KERNEL_RUN(arange_kernel, n)(n, arr.data());
 	return arr;
 }
