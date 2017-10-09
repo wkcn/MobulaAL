@@ -135,27 +135,45 @@ ostream& operator<<(ostream &os,const NDArray &a){
 	return os;
 }
 
+typedef decltype(add_kernel) KBinFunc; // kernel binary function
+void kernel_run_broadcast_a(KBinFunc kernel, const NDArray &a, const NDArray &b, NDArray &output){
+	for (int offset = 0;offset < b.size();offset += a.size()) 
+		KERNEL_RUN(*kernel, a.size())(a.size(), a.data(), b.data() + offset, output.data());
+}
+
+void kernel_run_broadcast_b(KBinFunc kernel, const NDArray &a, const NDArray &b, NDArray &output){
+	for (int offset = 0;offset < a.size();offset += b.size()) 
+		KERNEL_RUN(*kernel, b.size())(b.size(), a.data() + offset, b.data(), output.data());
+}
+
+void kernel_run_broadcast(KBinFunc kernel, const NDArray &a, const NDArray &b, NDArray &output){
+	if (a.size() > b.size()){
+		kernel_run_broadcast_b(kernel, a, b, output);
+	}else{
+		kernel_run_broadcast_a(kernel, a, b, output);
+	}
+}
+
 NDArray operator+(const NDArray& a, const NDArray& b){
 	NDArray output(a.shape());
-	KERNEL_RUN(add_kernel, 1)(a.size(), a.data(), b.data(), output.data());
+	kernel_run_broadcast(add_kernel, a, b, output);
 	return output;
-}
-
-NDArray& operator+=(NDArray &a, const NDArray& b){
-	KERNEL_RUN(add_kernel, 1)(a.size(), a.data(), b.data(), a.data());
-	return a;
-}
-
-NDArray& operator-=(NDArray &a, const NDArray& b){
-	KERNEL_RUN(subtract_kernel, 1)(a.size(), a.data(), b.data(), a.data());
-	return a;
 }
 
 NDArray operator-(const NDArray& a, const NDArray& b){
 	NDArray output(a.shape());
-	KERNEL_RUN(subtract_kernel, 1)(a.size(), a.data(), b.data(), output.data());
+	kernel_run_broadcast(subtract_kernel, a, b, output);
 	return output;
 }
 
+NDArray& operator+=(NDArray &a, const NDArray& b){
+	kernel_run_broadcast_b(add_kernel, a, b, a);
+	return a;
+}
+
+NDArray& operator-=(NDArray &a, const NDArray& b){
+	kernel_run_broadcast_b(subtract_kernel, a, b, a);
+	return a;
+}
 
 };
