@@ -1,4 +1,5 @@
 #include "ndarray.h"
+#include "kernels.h"
 
 namespace mobula{
 
@@ -122,12 +123,6 @@ ostream& operator<<(ostream &os,const NDArray &a){
 	int max_len = ss.str().size();
 	print_ndarray(os, a_host, shape_iter, 0, max_len);
 	return os;
-}
-
-MOBULA_KERNEL add_kernel(const int n, const DType *a, const DType *b, DType *output){
-	KERNEL_LOOP(i, n){
-		output[i] = a[i] + b[i];
-	}
 }
 
 NDArray operator+(const NDArray& a, const NDArray& b){
