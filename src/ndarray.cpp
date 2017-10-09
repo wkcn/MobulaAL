@@ -138,13 +138,23 @@ ostream& operator<<(ostream &os,const NDArray &a){
 NDArray operator+(const NDArray& a, const NDArray& b){
 	NDArray output(a.shape());
 	KERNEL_RUN(add_kernel, 1)(a.size(), a.data(), b.data(), output.data());
-	output.reshape(a.shape());
 	return output;
 }
 
 NDArray& operator+=(NDArray &a, const NDArray& b){
 	KERNEL_RUN(add_kernel, 1)(a.size(), a.data(), b.data(), a.data());
 	return a;
+}
+
+NDArray& operator-=(NDArray &a, const NDArray& b){
+	KERNEL_RUN(subtract_kernel, 1)(a.size(), a.data(), b.data(), a.data());
+	return a;
+}
+
+NDArray operator-(const NDArray& a, const NDArray& b){
+	NDArray output(a.shape());
+	KERNEL_RUN(subtract_kernel, 1)(a.size(), a.data(), b.data(), output.data());
+	return output;
 }
 
 

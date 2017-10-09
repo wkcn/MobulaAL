@@ -16,5 +16,8 @@ int main(){
 	cout << a + b << endl;
 	a += b;
 	cout << a << endl;
+	a -= b;
+	cout << a << endl;
+	cout << a - a - b << endl;
 	return 0;
 }

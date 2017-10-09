@@ -33,8 +33,10 @@ public:
 	T get_data(T, int i);
 public:
 	friend NDArray& operator+=(NDArray &, const NDArray&);
+	friend NDArray& operator-=(NDArray &, const NDArray&);
 public:
 	friend NDArray operator+(const NDArray&, const NDArray&);
+	friend NDArray operator-(const NDArray&, const NDArray&);
 private:
 	int _size;
 	Vec<int> _shape;
